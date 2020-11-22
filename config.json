@@ -1,0 +1,20 @@
+{
+    "application_name": "airlines",
+    "debug": true,
+    "server": {
+        "address": ":9090"
+    },
+    "context": {
+        "timeout": 2
+    },
+    "database": {
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "pass": "",
+        "name": "airlines"
+    },
+    "credentials": {
+        "jwt_signature_key": "6PqwZWDfUaAYVz9ZCYgbaQUYjopKc5jbYKsKIc4zPhIhMZWgOuYEHPOcJTfIdxkh8IZtlNokTNx6L7YAxGKoqtagQXeqaq_GxQZzX"
+    }
+}
