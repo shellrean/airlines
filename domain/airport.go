@@ -21,5 +21,5 @@ type AirportRepository interface {
 
 // AirportUsecase represent airport's usecase
 type AirportUsecase interface {
-
+    Fetch(ctx context.Context, num int64) ([]Airport, error)
 }
