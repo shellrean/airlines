@@ -24,5 +24,5 @@ type PlaneSeatRepository interface {
 }
 
 type PlaneSeatUsecase interface {
-
+	Fetch(ctx context.Context, num int64) ([]PlaneSeat, error)
 }
