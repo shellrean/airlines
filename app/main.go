@@ -24,6 +24,8 @@ import (
     _airportHttpDelivery "shellrean.com/airlines/airport/delivery/http"
     _airportRepo "shellrean.com/airlines/airport/repository/mysql"
     _airportUsecase "shellrean.com/airlines/airport/usecase"
+
+    _planeSeatRepo "shellrean.com/airlines/plane_seat/repository/mysql"
 )
 
 func init() {
@@ -85,6 +87,7 @@ func main() {
     userRepo := _userRepo.NewMysqlUserRepository(dbConn)
     planeRepo := _planeRepo.NewMysqlPlaneRepository(dbConn)
     airportRepo := _airportRepo.NewMysqlAirportRepository(dbConn)
+    _ = _planeSeatRepo.NewMysqlPlaneSeatRepository(dbConn)
 
     timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
