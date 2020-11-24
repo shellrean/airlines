@@ -135,7 +135,7 @@ func (a *mysqlAirportRepository) Update(ctx context.Context, airport *domain.Air
 }
 
 func (a *mysqlAirportRepository) Delete(ctx context.Context, id int64) (error) {
-	query := `DELETE airports WHERE id=?`
+	query := `DELETE FROM airports WHERE id=?`
 
 	stmt, err := a.Conn.PrepareContext(ctx, query)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
     "github.com/labstack/echo"
 
     "shellrean.com/airlines/domain"
+    "shellrean.com/airlines/user/delivery/middleware"
 )
 
 // ResponseError represent the response error struct
@@ -20,16 +21,16 @@ type PlaneHandler struct {
 }
 
 // NewPlaneHandler will initialize the plane resources endpoint
-func NewPlaneHandler(e *echo.Echo, pu domain.PlaneUsecase) {
+func NewPlaneHandler(e *echo.Echo, pu domain.PlaneUsecase, middl *middleware.GoMiddleware) {
     handler := &PlaneHandler{
-        PlaneUsecase: pu,
+        PlaneUsecase:   pu,
     }
 
-    e.GET("/planes", handler.FetchPlanes)
-    e.POST("/planes", handler.CreatePlane)
-    e.GET("/planes/:id", handler.GetPlaneByID)
-    e.PUT("/planes/:id", handler.UpdatePlane)
-    e.DELETE("/planes/:id", handler.DeletePlane)
+    e.GET("/planes", handler.FetchPlanes, middl.Auth)
+    e.POST("/planes", handler.CreatePlane, middl.Auth)
+    e.GET("/planes/:id", handler.GetPlaneByID, middl.Auth)
+    e.PUT("/planes/:id", handler.UpdatePlane, middl.Auth)
+    e.DELETE("/planes/:id", handler.DeletePlane, middl.Auth)
 }
 
 func (p *PlaneHandler) FetchPlanes(c echo.Context) error {

@@ -93,10 +93,10 @@ func main() {
     _userHttpDelivery.NewUserHandler(e, userUsecase, middl)
 
     planeUsecase := _planeUsecase.NewPlaneUsecase(planeRepo, timeoutContext)
-    _planeHttpDelivery.NewPlaneHandler(e, planeUsecase)
+    _planeHttpDelivery.NewPlaneHandler(e, planeUsecase, middl)
 
     airportUsecase := _airportUsecase.NewAirportUsecase(airportRepo, timeoutContext)
-    _airportHttpDelivery.NewAirportHandler(e, airportUsecase)
+    _airportHttpDelivery.NewAirportHandler(e, airportUsecase, middl)
 
     // Serve Server
     log.Fatal(e.Start(viper.GetString("server.address")))

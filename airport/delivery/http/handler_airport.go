@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo"
 
 	"shellrean.com/airlines/domain"
+	"shellrean.com/airlines/user/delivery/middleware"
 )
 
 type responseError struct {
@@ -17,16 +18,16 @@ type airportHandler struct {
 	airportUsecase 		domain.AirportUsecase
 }
 
-func NewAirportHandler(e *echo.Echo, airUcase domain.AirportUsecase) {
+func NewAirportHandler(e *echo.Echo, airUcase domain.AirportUsecase, middl *middleware.GoMiddleware) {
 	hander := &airportHandler {
 		airportUsecase:			airUcase,
 	}
 
-	e.GET("/airports", hander.Index)
-	e.GET("/airports/:id", hander.Show)
-	e.POST("/airports", hander.Store)
-	e.PUT("/airports/:id", hander.Update)
-	e.DELETE("/airports/:id", hander.Destroy)
+	e.GET("/airports", hander.Index, middl.Auth)
+	e.GET("/airports/:id", hander.Show, middl.Auth)
+	e.POST("/airports", hander.Store, middl.Auth)
+	e.PUT("/airports/:id", hander.Update, middl.Auth)
+	e.DELETE("/airports/:id", hander.Destroy, middl.Auth)
 }
 
 func (a *airportHandler) Index(c echo.Context) (error) {
