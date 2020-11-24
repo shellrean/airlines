@@ -20,6 +20,10 @@ import (
     _planeHttpDelivery "shellrean.com/airlines/plane/delivery/http"
     _planeRepo "shellrean.com/airlines/plane/repository/mysql"
     _planeUsecase "shellrean.com/airlines/plane/usecase"
+
+    _airportHttpDelivery "shellrean.com/airlines/airport/delivery/http"
+    _airportRepo "shellrean.com/airlines/airport/repository/mysql"
+    _airportUsecase "shellrean.com/airlines/airport/usecase"
 )
 
 func init() {
@@ -80,6 +84,7 @@ func main() {
     // Initialize repository
     userRepo := _userRepo.NewMysqlUserRepository(dbConn)
     planeRepo := _planeRepo.NewMysqlPlaneRepository(dbConn)
+    airportRepo := _airportRepo.NewMysqlAirportRepository(dbConn)
 
     timeoutContext := time.Duration(viper.GetInt("context.timeout")) * time.Second
 
@@ -89,6 +94,9 @@ func main() {
 
     planeUsecase := _planeUsecase.NewPlaneUsecase(planeRepo, timeoutContext)
     _planeHttpDelivery.NewPlaneHandler(e, planeUsecase)
+
+    airportUsecase := _airportUsecase.NewAirportUsecase(airportRepo, timeoutContext)
+    _airportHttpDelivery.NewAirportHandler(e, airportUsecase)
 
     // Serve Server
     log.Fatal(e.Start(viper.GetString("server.address")))
