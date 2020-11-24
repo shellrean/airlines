@@ -31,10 +31,7 @@ func NewAirportHandler(e *echo.Echo, airUcase domain.AirportUsecase) {
 
 func (a *airportHandler) Index(c echo.Context) (error) {
 	num := c.QueryParam("num")
-	limit, err := strconv.Atoi(num)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, responseError{domain.ErrBadParamInput.Error()})
-	}
+	limit, _ := strconv.Atoi(num)
 	
 	ctx := c.Request().Context()
 	list, err := a.airportUsecase.Fetch(ctx, int64(limit))
@@ -50,7 +47,7 @@ func (a *airportHandler) Show(c echo.Context) (error) {
 	
 	id, err := strconv.Atoi(idS)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, responseError{err.Error()})
+		return c.JSON(http.StatusBadRequest, responseError{domain.ErrBadParamInput.Error()})
 	}
 
 	ctx := c.Request().Context()
