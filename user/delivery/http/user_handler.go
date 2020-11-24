@@ -22,19 +22,15 @@ type ResponseError struct {
 // UserHandler respresent the httphandler for user
 type UserHandler struct {
     UserUsecase     domain.UserUsecase
-    Middleware      *middleware.GoMiddleware
 }
 
 // NewUserHandler will initialize the articles resources endpoint
 func NewUserHandler(e *echo.Echo, us domain.UserUsecase, middl *middleware.GoMiddleware) {
     handler := &UserHandler{
         UserUsecase: us,
-        Middleware: middl,
     }
     
-    auth := e.Group("/", middl.Auth)
-    auth.GET("user-data", handler.Authenticated)
-
+    e.GET("/user-data", handler.Authenticated, middl.Auth)
     e.POST("/login", handler.Signin)
     e.GET("/refresh-token", handler.Refresh)
 }
