@@ -8,7 +8,8 @@ import (
     "time"
 
     _ "github.com/go-sql-driver/mysql"
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
+    "github.com/labstack/echo/v4/middleware"
     "github.com/spf13/viper"
 
     "shellrean.com/airlines/domain"
@@ -80,6 +81,7 @@ func main() {
 
     // Initialize handler
     e := echo.New()
+    e.Use(middleware.Logger())
 
     // Initialize middleware
     middl := _userDeliveryMiddleware.InitMiddleware(jwtConfig)

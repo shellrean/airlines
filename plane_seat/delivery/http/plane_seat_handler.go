@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 
 	"shellrean.com/airlines/domain"
 	"shellrean.com/airlines/user/delivery/middleware"
@@ -26,17 +26,45 @@ func NewPlaneSeatHandler(e *echo.Echo, psu domain.PlaneSeatUsecase, mdl *middlew
 	}
 
 	e.GET("/plane-seats", handler.Index, mdl.Auth)
+	e.POST("/plane-seats", handler.Store, mdl.Auth)
 }
 
 func (psh *planeSeatHandler) Index(c echo.Context) (error) {
+	var list []domain.PlaneSeat
+	var err error
+	
 	numS := c.QueryParam("num")
+	plane_idS := c.QueryParam("plane")
 	num, _ := strconv.Atoi(numS)
+	plane_id, _ := strconv.Atoi(plane_idS)
 
 	ctx := c.Request().Context()
-	list, err := psh.planeSeatUsecase.Fetch(ctx, int64(num))
+	
+	if plane_id == 0 {
+		list, err = psh.planeSeatUsecase.Fetch(ctx, int64(num))
+	} else {
+		list, err = psh.planeSeatUsecase.GetByPlaneID(ctx, int64(num), int64(plane_id))
+	}
+	
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responseError{err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, list)
+}
+
+func (psh *planeSeatHandler) Store(c echo.Context) (error) {
+	var planeSeat domain.PlaneSeat
+	err := c.Bind(&planeSeat)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, responseError{err.Error()})
+	}
+
+	ctx := c.Request().Context()
+	err = psh.planeSeatUsecase.Store(ctx, &planeSeat)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responseError{err.Error()})
+	}
+
+	return c.JSON(http.StatusCreated, planeSeat)
 }

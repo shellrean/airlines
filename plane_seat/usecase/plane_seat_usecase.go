@@ -77,7 +77,7 @@ func (psu *planeSeatUsecase) fillPlaneDetails(c context.Context, data []domain.P
 
 func (psu *planeSeatUsecase) Fetch(c context.Context, num int64) ([]domain.PlaneSeat, error) {
 	if num == 0 {
-		num = 10;
+		num = 10
 	}
 
 	ctx, cancel := context.WithTimeout(c, psu.contextTimeout)
@@ -94,4 +94,46 @@ func (psu *planeSeatUsecase) Fetch(c context.Context, num int64) ([]domain.Plane
 	}
 
 	return res, nil
+}
+
+func (psu *planeSeatUsecase) GetByPlaneID(c context.Context, num int64, id int64) ([]domain.PlaneSeat, error) {
+	if num == 0 {
+		num = 10
+	}
+	
+	ctx, cancel := context.WithTimeout(c, psu.contextTimeout)
+	defer cancel()
+
+	res, err := psu.planeSeatRepo.GetByPlaneID(ctx, num, id)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err = psu.fillPlaneDetails(ctx, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (psu *planeSeatUsecase) Store(c context.Context, planeseat *domain.PlaneSeat) (error) {
+	ctx, cancel := context.WithTimeout(c, psu.contextTimeout)
+	defer cancel()
+
+	plane, err := psu.planeRepo.GetByID(ctx, planeseat.Plane.ID)
+	if err != nil {
+		return err
+	}
+
+	planeseat.Plane = plane
+	planeseat.CreatedAt = time.Now()
+	planeseat.UpdatedAt = time.Now()
+
+	err = psu.planeSeatRepo.Store(ctx, planeseat)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

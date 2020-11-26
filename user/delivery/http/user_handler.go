@@ -6,7 +6,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/labstack/echo"
+    "github.com/labstack/echo/v4"
     validator "gopkg.in/go-playground/validator.v9"
     jwt "github.com/dgrijalva/jwt-go"
 

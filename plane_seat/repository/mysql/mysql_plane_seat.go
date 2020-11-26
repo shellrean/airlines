@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	"shellrean.com/airlines/domain"
@@ -32,10 +33,11 @@ func (m *mysqlPlaneSeat) fetch(ctx context.Context, query string, args ...interf
 	for rows.Next() {
 		p := domain.PlaneSeat{}
 		planeId := int64(0)
+		setClass := ""
 		err = rows.Scan(
 			&p.ID,
 			&planeId,
-			&p.SeatClass,
+			&setClass,
 			&p.CreatedAt,
 			&p.UpdatedAt,
 		)
@@ -46,6 +48,9 @@ func (m *mysqlPlaneSeat) fetch(ctx context.Context, query string, args ...interf
 		p.Plane = domain.Plane{
 			ID: planeId,
 		}
+
+		json.Unmarshal([]byte(setClass), &p.SeatClass)
+		
 		result = append(result, p)
 	}
 
@@ -64,27 +69,32 @@ func (m *mysqlPlaneSeat) Fetch(ctx context.Context, num int64) ([]domain.PlaneSe
 	return res, nil
 }
 
-func (m *mysqlPlaneSeat) GetByPlaneId(ctx context.Context, id int64) ([]domain.PlaneSeat, error) {
+func (m *mysqlPlaneSeat) GetByPlaneID(ctx context.Context, num int64, id int64) ([]domain.PlaneSeat, error) {
 	query := `SELECT id,plane_id,seat_class,created_at,updated_at
-					FROM plane_seats WHERE plane_id=?`
+					FROM plane_seats WHERE plane_id=? LIMIT ?`
 
-	list, err := m.fetch(ctx, query, id)
+	list, err := m.fetch(ctx, query, id, num)
 	if err != nil {
 		return nil, err
 	}
 
-	return list, err
+	return list, nil
 }
 
 func (m *mysqlPlaneSeat) Store(ctx context.Context, seat *domain.PlaneSeat) (error) {
-	query := `INSERT seat_class SET plane_id=?,seat_class=?,created_at=?,updated_at=?`
+	query := `INSERT plane_seats SET plane_id=?,seat_class=?,created_at=?,updated_at=?`
 	
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return err
 	}
 
-	res, err := stmt.ExecContext(ctx, seat.Plane.ID, seat.SeatClass, seat.CreatedAt, seat.UpdatedAt)
+	setClass, err := json.Marshal(seat.SeatClass)
+	if err != nil {
+		return err
+	}
+
+	res, err := stmt.ExecContext(ctx, seat.Plane.ID, setClass, seat.CreatedAt, seat.UpdatedAt)
 	if err != nil {
 		return err
 	}
@@ -147,4 +157,3 @@ func (m *mysqlPlaneSeat) Delete(ctx context.Context, id int64) (error) {
 
 	return nil
 }
-
