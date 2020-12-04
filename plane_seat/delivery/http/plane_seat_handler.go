@@ -27,6 +27,7 @@ func NewPlaneSeatHandler(e *echo.Echo, psu domain.PlaneSeatUsecase, mdl *middlew
 
 	e.GET("/plane-seats", handler.Index, mdl.Auth)
 	e.POST("/plane-seats", handler.Store, mdl.Auth)
+	e.PUT("/plane-sets/:id", handler.Update, mdl.Auth)
 }
 
 func (psh *planeSeatHandler) Index(c echo.Context) (error) {
@@ -67,4 +68,8 @@ func (psh *planeSeatHandler) Store(c echo.Context) (error) {
 	}
 
 	return c.JSON(http.StatusCreated, planeSeat)
+}
+
+func (psh *planeSeatHandler) Update(c echo.Context) (error) {
+	
 }
