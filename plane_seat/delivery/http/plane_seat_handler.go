@@ -71,5 +71,23 @@ func (psh *planeSeatHandler) Store(c echo.Context) (error) {
 }
 
 func (psh *planeSeatHandler) Update(c echo.Context) (error) {
-	
+	var planeSeat domain.PlaneSeat
+	err := c.Bind(&planeSeat)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, responseError{err.Error()})
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, responseError{domain.ErrNotFound.Error()})
+	}
+	planeSeat.ID = int64(id)
+	ctx := c.Request().Context()
+
+	err = psh.PlaneSeatUsecase.Update(planeSeat)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responseError{err.Error()})
+	}
+
+	return c.JSON(http.StatusCreated, planeSeat)
 }
