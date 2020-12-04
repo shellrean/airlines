@@ -126,11 +126,39 @@ func (psu *planeSeatUsecase) Store(c context.Context, planeseat *domain.PlaneSea
 		return err
 	}
 
+	if plane == (domain.Plane{}) {
+		return domain.ErrNotFound
+	}
+
 	planeseat.Plane = plane
 	planeseat.CreatedAt = time.Now()
 	planeseat.UpdatedAt = time.Now()
 
 	err = psu.planeSeatRepo.Store(ctx, planeseat)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (psu *planeSeatUsecase) Update(c context.Context, planeseat *domain.PlaneSeat) (error) {
+	ctx, cancel := context.WithTimeout(c, psu.contextTimeout)
+	defer cancel()
+
+	plane, err := psu.planeRepo.GetByID(ctx, planeseat.Plane.ID)
+	if err != nil {
+		return err
+	}
+
+	if plane == (domain.Plane{}) {
+		return domain.ErrNotFound
+	}
+
+	planeseat.Plane = plane
+	planeseat.UpdatedAt = time.Now()
+
+	err = psu.planeSeatRepo.Update(ctx, planeseat)
 	if err != nil {
 		return err
 	}
