@@ -53,7 +53,7 @@ func (u *userUsecase) GetAuthentication(c context.Context, us domain.User) (stri
     claims := MyClaims{
         StandardClaims: jwt.StandardClaims{
             Issuer: u.jwtConfig.AppName,
-            ExpiresAt: time.Now().Add(time.Duration(24) * time.Hour).Unix(),
+            ExpiresAt: time.Now().Add(time.Duration(720) * time.Hour).Unix(),
         },
         ID:         res.ID,
         Name:       res.Name,
@@ -102,7 +102,7 @@ func (u *userUsecase) RefreshToken(c context.Context, tokenString string) (strin
         return signarureKey, nil
     })
 
-    expirationTime := time.Now().Add(time.Duration(5) * time.Hour).Unix()
+    expirationTime := time.Now().Add(time.Duration(720) * time.Hour).Unix()
     claims.ExpiresAt = expirationTime
     token = jwt.NewWithClaims(
         JWT_SIGNING_METHOD,
